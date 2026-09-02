@@ -94,10 +94,8 @@ test('loads release assets through the mirror on a static Cloudflare deployment'
   };
 
   const release = await fetchLatestRelease(fetchImpl);
-  assert.deepEqual(requests, [
-    '/api/release',
-    'https://gh-proxy.com/https://api.github.com/repos/DDguan2010/wlsaplus/releases/latest',
-  ]);
+  assert.equal(requests[0], '/api/release');
+  assert.match(requests[1], /^https:\/\/gh-proxy\.com\/https:\/\/api\.github\.com\/repos\/DDguan2010\/wlsaplus\/releases\/latest\?noCache=\d+$/);
   assert.equal(release.version, '1.0.3');
   assert.equal(release.assets[0].url, 'https://github.com/DDguan2010/wlsaplus/releases/download/v1.0.3/WLSAPlus-1.0.3-Windows-Setup.exe');
 });
@@ -118,11 +116,9 @@ test('falls back to the direct GitHub API when the mirror is unavailable', async
 
   const release = await fetchLatestRelease(fetchImpl);
   assert.equal(release.version, '1.0.3');
-  assert.deepEqual(requests, [
-    '/api/release',
-    'https://gh-proxy.com/https://api.github.com/repos/DDguan2010/wlsaplus/releases/latest',
-    'https://api.github.com/repos/DDguan2010/wlsaplus/releases/latest',
-  ]);
+  assert.equal(requests[0], '/api/release');
+  assert.match(requests[1], /^https:\/\/gh-proxy\.com\/https:\/\/api\.github\.com\/repos\/DDguan2010\/wlsaplus\/releases\/latest\?noCache=\d+$/);
+  assert.match(requests[2], /^https:\/\/api\.github\.com\/repos\/DDguan2010\/wlsaplus\/releases\/latest\?noCache=\d+$/);
 });
 
 test('uses the accelerator only for GitHub release downloads', () => {

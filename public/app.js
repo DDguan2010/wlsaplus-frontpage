@@ -36,7 +36,9 @@ async function fetchGithubRelease(fetchImpl, url) {
   const signal = typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function'
     ? AbortSignal.timeout(8_000)
     : undefined;
-  const response = await fetchImpl(url, { headers: { Accept: 'application/vnd.github+json' }, signal });
+  const requestUrl = new URL(url);
+  requestUrl.searchParams.set('noCache', String(Date.now()));
+  const response = await fetchImpl(requestUrl.href, { headers: { Accept: 'application/vnd.github+json' }, signal });
   if (!response.ok) throw new Error(`Release request failed with ${response.status}.`);
   return normalizeGithubRelease(await response.json());
 }
