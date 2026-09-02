@@ -1,5 +1,7 @@
 const releaseFallback = 'https://github.com/DDguan2010/wlsaplus/releases/latest';
 const releaseApi = 'https://api.github.com/repos/DDguan2010/wlsaplus/releases/latest';
+const mirrorOrigin = 'https://gh-proxy.com/';
+const mirrorReleaseApi = `${mirrorOrigin}${releaseApi}`;
 const patterns = {
   windows: /Windows-Setup\.exe$/i,
   android: /Android\.apk$/i,
@@ -12,6 +14,7 @@ function normalizeGithubRelease(payload) {
   }
 
   return {
+    releaseId: Number(payload.id) || null,
     version: payload.tag_name.replace(/^v/, ''),
     tag: payload.tag_name,
     name: typeof payload.name === 'string' && payload.name ? payload.name : payload.tag_name,
@@ -29,6 +32,15 @@ function validRelease(payload) {
     && typeof payload.url === 'string' && Array.isArray(payload.assets);
 }
 
+async function fetchGithubRelease(fetchImpl, url) {
+  const signal = typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function'
+    ? AbortSignal.timeout(8_000)
+    : undefined;
+  const response = await fetchImpl(url, { headers: { Accept: 'application/vnd.github+json' }, signal });
+  if (!response.ok) throw new Error(`Release request failed with ${response.status}.`);
+  return normalizeGithubRelease(await response.json());
+}
+
 export async function fetchLatestRelease(fetchImpl = fetch) {
   try {
     const response = await fetchImpl('/api/release', { headers: { Accept: 'application/json' } });
@@ -37,10 +49,24 @@ export async function fetchLatestRelease(fetchImpl = fetch) {
     const release = await response.json();
     if (!validRelease(release)) throw new Error('Local release API returned invalid data.');
     return release;
+  } catch { /* Static deployments do not provide the local API. */ }
+
+  try {
+    return await fetchGithubRelease(fetchImpl, mirrorReleaseApi);
   } catch {
-    const response = await fetchImpl(releaseApi, { headers: { Accept: 'application/vnd.github+json' } });
-    if (!response.ok) throw new Error(`GitHub release request failed with ${response.status}.`);
-    return normalizeGithubRelease(await response.json());
+    return fetchGithubRelease(fetchImpl, releaseApi);
+  }
+}
+
+export function mirrorDownloadUrl(url, cacheKey = null) {
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== 'https:' || parsed.hostname !== 'github.com' || !parsed.pathname.startsWith('/DDguan2010/wlsaplus/releases/download/')) return url;
+    const mirrored = new URL(`${mirrorOrigin}${parsed.href}`);
+    if (cacheKey !== null) mirrored.searchParams.set('release', String(cacheKey));
+    return mirrored.href;
+  } catch {
+    return url;
   }
 }
 
@@ -66,9 +92,9 @@ async function loadRelease() {
 
     for (const link of links) {
       const asset = release.assets.find((candidate) => patterns[link.dataset.platform]?.test(candidate.name));
-      link.href = asset?.url ?? release.url;
+      link.href = asset ? mirrorDownloadUrl(asset.url, release.releaseId ?? release.tag) : release.url;
       const detail = link.querySelector('span');
-      detail.textContent = asset ? `${formatSize(asset.size)} | ${release.tag}` : `View ${release.tag} files`;
+      detail.textContent = asset ? `${formatSize(asset.size)} | ${release.tag} | Accelerated` : `View ${release.tag} files`;
     }
   } catch {
     document.querySelector('#release-version').textContent = 'Latest release on GitHub';

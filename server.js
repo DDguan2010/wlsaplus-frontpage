@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 const DEFAULT_PUBLIC_DIR = fileURLToPath(new URL('./public/', import.meta.url));
 const RELEASE_API = 'https://api.github.com/repos/DDguan2010/wlsaplus/releases/latest';
 const CACHE_DURATION_MS = 5 * 60 * 1000;
-const CONTENT_SECURITY_POLICY = "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self' https://api.github.com; frame-ancestors 'none'; base-uri 'self'; form-action 'none'";
+const CONTENT_SECURITY_POLICY = "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self' https://api.github.com https://gh-proxy.com; frame-ancestors 'none'; base-uri 'self'; form-action 'none'";
 const MIME_TYPES = new Map([
   ['.css', 'text/css; charset=utf-8'],
   ['.html', 'text/html; charset=utf-8'],
@@ -35,6 +35,7 @@ function releaseFromGithub(payload) {
   }
 
   return {
+    releaseId: Number(payload.id) || null,
     version: payload.tag_name.replace(/^v/, ''),
     tag: payload.tag_name,
     name: typeof payload.name === 'string' && payload.name ? payload.name : payload.tag_name,

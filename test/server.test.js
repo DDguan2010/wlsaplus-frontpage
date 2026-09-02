@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { once } from 'node:events';
 import test from 'node:test';
 import { createApp } from '../server.js';
-import { fetchLatestRelease } from '../public/app.js';
+import { fetchLatestRelease, mirrorDownloadUrl } from '../public/app.js';
 
 async function withServer(options, run) {
   const server = createApp(options);
@@ -35,6 +35,7 @@ test('returns normalized latest-release data', async () => {
     status: 200,
     async json() {
       return {
+        id: 380451677,
         tag_name: 'v1.0.2',
         name: 'WLSAPlus 1.0.2',
         html_url: 'https://github.com/DDguan2010/wlsaplus/releases/tag/v1.0.2',
@@ -48,6 +49,7 @@ test('returns normalized latest-release data', async () => {
     const response = await fetch(`${baseUrl}/api/release`);
     assert.equal(response.status, 200);
     assert.deepEqual(await response.json(), {
+      releaseId: 380451677,
       version: '1.0.2',
       tag: 'v1.0.2',
       name: 'WLSAPlus 1.0.2',
@@ -67,7 +69,7 @@ test('uses a clear gateway error when GitHub is unavailable', async () => {
   });
 });
 
-test('loads direct download assets on a static Cloudflare deployment', async () => {
+test('loads release assets through the mirror on a static Cloudflare deployment', async () => {
   const requests = [];
   const fetchImpl = async (url) => {
     requests.push(url);
@@ -78,6 +80,7 @@ test('loads direct download assets on a static Cloudflare deployment', async () 
     }
 
     return Response.json({
+      id: 381134633,
       tag_name: 'v1.0.3',
       name: 'WLSAPlus 1.0.3',
       html_url: 'https://github.com/DDguan2010/wlsaplus/releases/tag/v1.0.3',
@@ -93,8 +96,41 @@ test('loads direct download assets on a static Cloudflare deployment', async () 
   const release = await fetchLatestRelease(fetchImpl);
   assert.deepEqual(requests, [
     '/api/release',
-    'https://api.github.com/repos/DDguan2010/wlsaplus/releases/latest',
+    'https://gh-proxy.com/https://api.github.com/repos/DDguan2010/wlsaplus/releases/latest',
   ]);
   assert.equal(release.version, '1.0.3');
   assert.equal(release.assets[0].url, 'https://github.com/DDguan2010/wlsaplus/releases/download/v1.0.3/WLSAPlus-1.0.3-Windows-Setup.exe');
+});
+
+test('falls back to the direct GitHub API when the mirror is unavailable', async () => {
+  const requests = [];
+  const fetchImpl = async (url) => {
+    requests.push(url);
+    if (url === '/api/release') return new Response('Not found', { status: 404 });
+    if (url.startsWith('https://gh-proxy.com/')) return new Response('Unavailable', { status: 503 });
+    return Response.json({
+      id: 381134633,
+      tag_name: 'v1.0.3',
+      html_url: 'https://github.com/DDguan2010/wlsaplus/releases/tag/v1.0.3',
+      assets: [],
+    });
+  };
+
+  const release = await fetchLatestRelease(fetchImpl);
+  assert.equal(release.version, '1.0.3');
+  assert.deepEqual(requests, [
+    '/api/release',
+    'https://gh-proxy.com/https://api.github.com/repos/DDguan2010/wlsaplus/releases/latest',
+    'https://api.github.com/repos/DDguan2010/wlsaplus/releases/latest',
+  ]);
+});
+
+test('uses the accelerator only for GitHub release downloads', () => {
+  const download = 'https://github.com/DDguan2010/wlsaplus/releases/download/v1.0.3/WLSAPlus-1.0.3-Windows-Setup.exe';
+  assert.equal(mirrorDownloadUrl(download, 381134633), `https://gh-proxy.com/${download}?release=381134633`);
+  assert.equal(mirrorDownloadUrl('https://example.test/setup.exe'), 'https://example.test/setup.exe');
+  assert.equal(
+    mirrorDownloadUrl('https://github.com/another/project/releases/download/v1.0.3/setup.exe'),
+    'https://github.com/another/project/releases/download/v1.0.3/setup.exe',
+  );
 });
