@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 const DEFAULT_PUBLIC_DIR = fileURLToPath(new URL('./public/', import.meta.url));
 const RELEASE_API = 'https://api.github.com/repos/DDguan2010/wlsaplus/releases/latest';
 const CACHE_DURATION_MS = 5 * 60 * 1000;
+const CONTENT_SECURITY_POLICY = "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self' https://api.github.com; frame-ancestors 'none'; base-uri 'self'; form-action 'none'";
 const MIME_TYPES = new Map([
   ['.css', 'text/css; charset=utf-8'],
   ['.html', 'text/html; charset=utf-8'],
@@ -21,7 +22,7 @@ function send(response, status, body, contentType) {
     'Content-Type': contentType,
     'Content-Length': Buffer.byteLength(body),
     'Cache-Control': status === 200 ? 'public, max-age=300' : 'no-store',
-    'Content-Security-Policy': "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'none'",
+    'Content-Security-Policy': CONTENT_SECURITY_POLICY,
     'Referrer-Policy': 'strict-origin-when-cross-origin',
     'X-Content-Type-Options': 'nosniff',
   });
@@ -114,7 +115,7 @@ export function createApp({ fetchImpl = fetch, publicDir = DEFAULT_PUBLIC_DIR } 
         'Content-Type': contentType,
         'Content-Length': body.length,
         'Cache-Control': shouldRevalidate ? 'no-cache' : 'public, max-age=86400',
-        'Content-Security-Policy': "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'none'",
+        'Content-Security-Policy': CONTENT_SECURITY_POLICY,
         'Referrer-Policy': 'strict-origin-when-cross-origin',
         'X-Content-Type-Options': 'nosniff',
       });

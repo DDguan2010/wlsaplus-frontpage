@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { once } from 'node:events';
 import test from 'node:test';
 import { createApp } from '../server.js';
+import { fetchLatestRelease } from '../public/app.js';
 
 async function withServer(options, run) {
   const server = createApp(options);
@@ -64,4 +65,36 @@ test('uses a clear gateway error when GitHub is unavailable', async () => {
     assert.equal(response.status, 502);
     assert.match((await response.json()).error, /503/);
   });
+});
+
+test('loads direct download assets on a static Cloudflare deployment', async () => {
+  const requests = [];
+  const fetchImpl = async (url) => {
+    requests.push(url);
+    if (url === '/api/release') {
+      return new Response('<!doctype html><title>WLSAPlus</title>', {
+        headers: { 'Content-Type': 'text/html; charset=utf-8' },
+      });
+    }
+
+    return Response.json({
+      tag_name: 'v1.0.3',
+      name: 'WLSAPlus 1.0.3',
+      html_url: 'https://github.com/DDguan2010/wlsaplus/releases/tag/v1.0.3',
+      published_at: '2026-09-02T09:45:36Z',
+      assets: [{
+        name: 'WLSAPlus-1.0.3-Windows-Setup.exe',
+        browser_download_url: 'https://github.com/DDguan2010/wlsaplus/releases/download/v1.0.3/WLSAPlus-1.0.3-Windows-Setup.exe',
+        size: 237762806,
+      }],
+    });
+  };
+
+  const release = await fetchLatestRelease(fetchImpl);
+  assert.deepEqual(requests, [
+    '/api/release',
+    'https://api.github.com/repos/DDguan2010/wlsaplus/releases/latest',
+  ]);
+  assert.equal(release.version, '1.0.3');
+  assert.equal(release.assets[0].url, 'https://github.com/DDguan2010/wlsaplus/releases/download/v1.0.3/WLSAPlus-1.0.3-Windows-Setup.exe');
 });
