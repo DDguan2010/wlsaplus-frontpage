@@ -10,6 +10,20 @@ npm start
 
 Open `http://127.0.0.1:3000`.
 
+## Deploy
+
+Build command:
+
+```powershell
+npm install && npm run build
+```
+
+Start command:
+
+```powershell
+npm start
+```
+
 ## Test
 
 ```powershell
