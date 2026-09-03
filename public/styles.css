@@ -56,6 +56,8 @@ h1 { margin: 0; font-size: 58px; line-height: 1.04; font-weight: 700; }
 .download-link.primary span { color: #d9f4f8; }
 .download-link.primary:hover { border-color: var(--accent-strong); background: var(--accent-strong); }
 .release-notes { display: inline-block; margin-top: 16px; }
+.web-link { display: inline-flex; align-items: center; gap: 7px; margin-top: 16px; color: var(--accent); font-size: 14px; font-weight: 700; text-decoration: none; }
+.web-link:hover { color: var(--accent-strong); text-decoration: underline; text-underline-offset: 4px; }
 
 .product-shot { width: min(100%, 720px); margin: 36px auto 0; overflow: hidden; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); box-shadow: 0 18px 50px rgba(25, 28, 32, .12); }
 .product-shot img { width: 100%; height: auto; display: block; }

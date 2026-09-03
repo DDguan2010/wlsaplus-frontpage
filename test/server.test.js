@@ -20,7 +20,9 @@ test('serves the front page and static assets', async () => {
   await withServer({}, async (baseUrl) => {
     const page = await fetch(`${baseUrl}/`);
     assert.equal(page.status, 200);
-    assert.match(await page.text(), /<h1 id="hero-title">WLSAPlus<\/h1>/);
+    const pageBody = await page.text();
+    assert.match(pageBody, /<h1 id="hero-title">WLSAPlus<\/h1>/);
+    assert.match(pageBody, /href="https:\/\/wlsap\.02studio\.xyz\/"/);
 
     const stylesheet = await fetch(`${baseUrl}/styles.css`);
     assert.equal(stylesheet.headers.get('content-type'), 'text/css; charset=utf-8');
