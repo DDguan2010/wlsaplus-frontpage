@@ -23,6 +23,10 @@ test('serves the front page and static assets', async () => {
     const pageBody = await page.text();
     assert.match(pageBody, /<h1 id="hero-title">WLSAPlus<\/h1>/);
     assert.match(pageBody, /href="https:\/\/wlsap\.02studio\.xyz\/"/);
+    assert.match(pageBody, /<a class="download-link" href="https:\/\/wlsap\.02studio\.xyz\/">/);
+    assert.match(pageBody, /class="download-link unavailable" aria-disabled="true"/);
+    assert.match(pageBody, /macOS unavailable/);
+    assert.doesNotMatch(pageBody, /data-platform="macos"/);
 
     const stylesheet = await fetch(`${baseUrl}/styles.css`);
     assert.equal(stylesheet.headers.get('content-type'), 'text/css; charset=utf-8');

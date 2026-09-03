@@ -14,6 +14,8 @@
   --accent-strong: #005364;
   --accent-soft: #b9eaf4;
   --success: #176b52;
+  --warning: #8a5100;
+  --warning-soft: #fff4dc;
 }
 
 * { box-sizing: border-box; }
@@ -47,7 +49,7 @@ h1 { margin: 0; font-size: 58px; line-height: 1.04; font-weight: 700; }
 .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); }
 #release-date:not(:empty)::before { content: " | "; }
 
-.downloads { margin-top: 26px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.downloads { margin-top: 26px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
 .download-link { min-height: 66px; padding: 12px 16px; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 3px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); text-align: left; text-decoration: none; transition: border-color 140ms ease, background 140ms ease; }
 .download-link strong { font-size: 14px; }
 .download-link span { color: var(--muted); font-size: 12px; }
@@ -55,9 +57,10 @@ h1 { margin: 0; font-size: 58px; line-height: 1.04; font-weight: 700; }
 .download-link.primary { border-color: var(--accent); background: var(--accent); color: #ffffff; }
 .download-link.primary span { color: #d9f4f8; }
 .download-link.primary:hover { border-color: var(--accent-strong); background: var(--accent-strong); }
+.download-link.unavailable { position: relative; border-color: #e6c88f; background: var(--warning-soft); color: var(--warning); cursor: not-allowed; }
+.download-link.unavailable::before { content: "!"; position: absolute; top: 8px; right: 9px; width: 18px; height: 18px; display: grid; place-items: center; border: 1px solid currentColor; border-radius: 50%; font-size: 11px; font-weight: 700; }
+.download-link.unavailable span { color: var(--warning); }
 .release-notes { display: inline-block; margin-top: 16px; }
-.web-link { display: inline-flex; align-items: center; gap: 7px; margin-top: 16px; color: var(--accent); font-size: 14px; font-weight: 700; text-decoration: none; }
-.web-link:hover { color: var(--accent-strong); text-decoration: underline; text-underline-offset: 4px; }
 
 .product-shot { width: min(100%, 720px); margin: 36px auto 0; overflow: hidden; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); box-shadow: 0 18px 50px rgba(25, 28, 32, .12); }
 .product-shot img { width: 100%; height: auto; display: block; }
@@ -95,6 +98,10 @@ footer { width: min(100% - 40px, 1040px); min-height: 82px; margin: 0 auto; disp
   .platform-band { align-items: flex-start; flex-direction: column; }
   .platform-band div { justify-content: flex-start; }
   footer { width: min(100% - 32px, 1040px); }
+}
+
+@media (min-width: 721px) and (max-width: 900px) {
+  .downloads { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (prefers-reduced-motion: reduce) {

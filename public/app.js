@@ -5,7 +5,6 @@ const mirrorReleaseApi = `${mirrorOrigin}${releaseApi}`;
 const patterns = {
   windows: /Windows-Setup\.exe$/i,
   android: /Android\.apk$/i,
-  macos: /macOS\.dmg$/i,
 };
 
 function normalizeGithubRelease(payload) {
