@@ -5,12 +5,18 @@
   "type": "module",
   "description": "The download and product guide page for WLSAPlus",
   "scripts": {
-    "build": "node --check server.js && node --test",
-    "start": "node server.js",
-    "dev": "node --watch server.js",
-    "test": "node --test"
+    "blog:build": "node scripts/build-blog.mjs",
+    "build": "node --check server.js && npm run blog:build && node --test",
+    "start": "npm run blog:build && node server.js",
+    "dev": "npm run blog:build && node --watch server.js",
+    "test": "npm run blog:build && node --test"
   },
   "engines": {
     "node": ">=22"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3",
+    "marked": "^16.4.2",
+    "sanitize-html": "^2.17.7"
   }
 }

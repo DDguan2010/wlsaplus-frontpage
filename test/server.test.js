@@ -3,6 +3,7 @@ import { once } from 'node:events';
 import test from 'node:test';
 import { createApp } from '../server.js';
 import { fetchLatestRelease, mirrorDownloadUrl } from '../public/app.js';
+import { parsePost, renderMarkdown } from '../scripts/build-blog.mjs';
 
 async function withServer(options, run) {
   const server = createApp(options);
@@ -26,13 +27,51 @@ test('serves the front page and static assets', async () => {
     assert.match(pageBody, /<a class="download-link" href="https:\/\/wlsap\.02studio\.xyz\/">/);
     assert.match(pageBody, /class="download-link unavailable" aria-disabled="true"/);
     assert.match(pageBody, /macOS unavailable/);
+    assert.match(pageBody, /href="\/blog\/"/);
     assert.doesNotMatch(pageBody, /data-platform="macos"/);
 
     const stylesheet = await fetch(`${baseUrl}/styles.css`);
     assert.equal(stylesheet.headers.get('content-type'), 'text/css; charset=utf-8');
     assert.equal(stylesheet.headers.get('cache-control'), 'no-cache');
     assert.match(await stylesheet.text(), /--accent: #00677a/);
+
+    const blog = await fetch(`${baseUrl}/blog/`);
+    assert.equal(blog.status, 200);
+    assert.match(await blog.text(), /Welcome to the WLSAPlus blog/);
+    assert.equal((await fetch(`${baseUrl}/blog`)).status, 200);
+
+    const post = await fetch(`${baseUrl}/blog/welcome-to-wlsaplus/`);
+    assert.equal(post.status, 200);
+    assert.match(await post.text(), /What you will find here/);
+
+    const vpnGuide = await fetch(`${baseUrl}/blog/use-wechat-on-restricted-networks/`);
+    assert.equal(vpnGuide.status, 200);
+    assert.match(await vpnGuide.text(), /Full device/);
+
+    const phoneGuide = await fetch(`${baseUrl}/blog/set-up-phone-control-on-windows/`);
+    assert.equal(phoneGuide.status, 200);
+    const phoneGuideBody = await phoneGuide.text();
+    assert.match(phoneGuideBody, /Enable Developer options/);
+    assert.match(phoneGuideBody, /same Wi-Fi network/);
   });
+});
+
+test('parses blog metadata and sanitizes rendered Markdown', () => {
+  const post = parsePost('safe-post.md', `---
+title: Safe post
+date: 2026-09-05
+summary: Test summary
+---
+
+## Heading
+
+Hello **WLSA**. <script>alert('no')</script>
+`);
+  assert.equal(post.slug, 'safe-post');
+  assert.equal(post.title, 'Safe post');
+  assert.match(post.body, /<h2>Heading<\/h2>/);
+  assert.doesNotMatch(post.body, /script|alert/);
+  assert.doesNotMatch(renderMarkdown('[bad](javascript:alert(1))'), /javascript:/);
 });
 
 test('returns normalized latest-release data', async () => {

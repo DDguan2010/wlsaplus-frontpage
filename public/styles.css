@@ -39,6 +39,7 @@ a { color: inherit; }
 nav { display: flex; align-items: center; gap: 24px; }
 nav a, footer a, .release-notes { color: var(--muted); font-size: 14px; font-weight: 500; text-decoration: none; }
 nav a:hover, footer a:hover, .release-notes:hover { color: var(--accent); text-decoration: underline; text-underline-offset: 4px; }
+nav a[aria-current="page"] { color: var(--accent); }
 
 .hero { padding: 46px 20px 50px; background: var(--surface); border-bottom: 1px solid var(--border); }
 .hero-copy { width: min(100%, 760px); margin: 0 auto; text-align: center; }
@@ -75,6 +76,24 @@ h1 { margin: 0; font-size: 58px; line-height: 1.04; font-weight: 700; }
 .guide-list h3 { margin: 0 0 9px; font-size: 19px; }
 .guide-list p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.6; }
 
+.blog-callout { width: min(100% - 40px, 1040px); margin: 0 auto 74px; padding: 30px 0; display: flex; align-items: center; justify-content: space-between; gap: 32px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.blog-callout h2 { margin: 0; font-size: 27px; line-height: 1.2; } .blog-callout p:last-child { max-width: 620px; margin: 10px 0 0; color: var(--muted); line-height: 1.55; }
+.blog-callout > a, .read-post, .article-back { color: var(--accent); font-size: 14px; font-weight: 700; text-decoration: none; white-space: nowrap; } .blog-callout > a:hover, .read-post:hover, .article-back:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+.blog-shell, .article-shell { width: min(100% - 40px, 900px); min-height: calc(100vh - 150px); margin: 0 auto; }
+.blog-heading { max-width: 660px; padding: 72px 0 48px; } .blog-heading h1 { font-size: 46px; } .blog-heading > p:last-child { margin: 16px 0 0; color: var(--muted); font-size: 18px; line-height: 1.55; }
+.post-list { padding-bottom: 80px; border-top: 1px solid var(--border); }
+.post-card { display: grid; grid-template-columns: 160px minmax(0, 1fr) auto; column-gap: 26px; padding: 30px 0; border-bottom: 1px solid var(--border); }
+.post-card time, .article-heading time { color: var(--accent); font-size: 13px; font-weight: 700; } .post-card h2 { margin: 0; font-size: 22px; line-height: 1.3; } .post-card h2 a { text-decoration: none; } .post-card h2 a:hover { color: var(--accent); }
+.post-card p { grid-column: 2; margin: 10px 0 0; color: var(--muted); font-size: 15px; line-height: 1.55; } .post-card .read-post { grid-column: 3; grid-row: 1 / span 2; align-self: center; }
+.blog-empty { min-height: 180px; display: grid; place-content: center; gap: 7px; color: var(--muted); text-align: center; }
+
+.article-shell { max-width: 760px; padding: 46px 0 90px; } .article-back { display: inline-flex; align-items: center; gap: 7px; margin-bottom: 44px; }
+.article-heading { padding-bottom: 34px; border-bottom: 1px solid var(--border); } .article-heading h1 { margin-top: 14px; font-size: 44px; line-height: 1.12; } .article-heading p { margin: 18px 0 12px; color: var(--muted); font-size: 18px; line-height: 1.55; } .article-heading > span { color: var(--muted); font-size: 13px; }
+.markdown-body { padding-top: 30px; font-size: 17px; line-height: 1.75; } .markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4 { margin: 38px 0 12px; line-height: 1.25; } .markdown-body h1 { font-size: 32px; } .markdown-body h2 { font-size: 26px; } .markdown-body h3 { font-size: 21px; } .markdown-body p, .markdown-body ul, .markdown-body ol, .markdown-body blockquote, .markdown-body pre, .markdown-body table { margin: 0 0 20px; }
+.markdown-body a { color: var(--accent); text-underline-offset: 3px; } .markdown-body img { display: block; max-width: 100%; height: auto; margin: 26px auto; border: 1px solid var(--border); border-radius: 6px; } .markdown-body blockquote { padding: 2px 0 2px 20px; border-left: 3px solid var(--accent); color: var(--muted); }
+.markdown-body pre { overflow-x: auto; padding: 16px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface-raised); font-size: 14px; line-height: 1.55; } .markdown-body :not(pre) > code { padding: 2px 5px; border-radius: 4px; background: var(--surface-raised); font-size: .9em; } .markdown-body table { width: 100%; border-collapse: collapse; font-size: 15px; } .markdown-body th, .markdown-body td { padding: 10px 12px; border: 1px solid var(--border); text-align: left; }
+
 .platform-band { padding: 34px max(20px, calc((100% - 1040px) / 2)); display: flex; align-items: center; justify-content: space-between; gap: 24px; background: var(--accent-soft); }
 .platform-band strong { font-size: 18px; }
 .platform-band div { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 9px; }
@@ -84,7 +103,7 @@ footer { width: min(100% - 40px, 1040px); min-height: 82px; margin: 0 auto; disp
 
 @media (max-width: 720px) {
   .site-header { width: min(100% - 32px, 1120px); height: 62px; }
-  nav { gap: 16px; }
+  nav { gap: 14px; } nav .github-link { display: none; }
   .hero { padding: 42px 16px 50px; }
   h1 { font-size: 40px; }
   .hero-summary { font-size: 17px; }
@@ -95,6 +114,10 @@ footer { width: min(100% - 40px, 1040px); min-height: 82px; margin: 0 auto; disp
   .section-intro h2 { font-size: 29px; }
   .guide-list { grid-template-columns: 1fr; margin-top: 36px; }
   .guide-list li { min-height: auto; }
+  .blog-callout { width: min(100% - 32px, 1040px); margin-bottom: 52px; align-items: flex-start; flex-direction: column; gap: 20px; } .blog-callout h2 { font-size: 24px; }
+  .blog-shell, .article-shell { width: min(100% - 32px, 900px); } .blog-heading { padding: 52px 0 36px; } .blog-heading h1, .article-heading h1 { font-size: 34px; }
+  .post-card { grid-template-columns: 1fr; gap: 8px; padding: 26px 0; } .post-card p, .post-card .read-post { grid-column: 1; grid-row: auto; } .post-card .read-post { margin-top: 8px; }
+  .article-shell { padding-top: 30px; } .article-back { margin-bottom: 32px; } .markdown-body { font-size: 16px; }
   .platform-band { align-items: flex-start; flex-direction: column; }
   .platform-band div { justify-content: flex-start; }
   footer { width: min(100% - 32px, 1040px); }

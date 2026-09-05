@@ -100,7 +100,10 @@ export function createApp({ fetchImpl = fetch, publicDir = DEFAULT_PUBLIC_DIR } 
       return;
     }
 
-    const relativePath = pathname === '/' ? 'index.html' : pathname.replace(/^\/+/, '');
+    const requestedPath = pathname.replace(/^\/+/, '');
+    const relativePath = pathname === '/'
+      ? 'index.html'
+      : path.extname(requestedPath) ? requestedPath : `${requestedPath.replace(/\/$/, '')}/index.html`;
     const filePath = path.resolve(publicRoot, relativePath);
     if (filePath !== publicRoot && !filePath.startsWith(`${publicRoot}${path.sep}`)) {
       send(response, 404, 'Not found', 'text/plain; charset=utf-8');
