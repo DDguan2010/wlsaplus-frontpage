@@ -1,27 +1,27 @@
 ---
 title: How to set up Phone control on Windows
-date: 2026-09-05
-summary: Connect an Android phone to your Windows laptop, with automatic secure fallback when Wi-Fi blocks device-to-device connections.
+date: 2026-09-08
+summary: Set up wireless Android phone control on Windows with WLSAPlus 1.0.7, including automatic Cloudflare fallback without an account.
 author: WLSAPlus
 ---
 
-Phone control lets you view and operate an Android phone from a Windows laptop. Connect USB for setup, then unplug it once the phone window opens. WLSAPlus tries direct Wi-Fi first. In the upcoming version, if that connection fails, it automatically offers its built-in Tailscale connection. There is no connection-mode setting to choose.
+Phone control lets you view and operate an Android phone from a Windows laptop, with sound, mouse, and keyboard support. Connect USB for setup, then unplug it once the phone window opens. WLSAPlus tries direct Wi-Fi first. If the devices cannot reach each other that way, it automatically uses a secure connection through Cloudflare. You do not need to choose a connection mode, create an account, or set up a server.
 
-**Availability:** automatic fallback and the Android companion described below are being added for an upcoming release. They are not included in version 1.0.6. Install a release that includes this feature on both devices before following the secure-connection steps. Direct Wi-Fi instructions also apply to older releases.
+**Updated for WLSAPlus 1.0.7.** Install version 1.0.7 or newer on Windows and Android from the [WLSAPlus download page](/). Automatic Cloudflare fallback is included in 1.0.7; the setup below does not apply to older Tailscale test builds.
 
 You do not need to know Android development or networking. Follow each section in order and keep the phone unlocked during the first connection.
 
 ## What you need
 
 - A Windows laptop with the WLSAPlus desktop app installed
-- An Android phone
+- An Android phone running Android 7 or newer, with the WLSAPlus Android app installed for secure fallback
 - A USB cable that supports data, not only charging
 - The phone and laptop connected to the **same Wi-Fi network** for the fastest direct connection
-- For automatic fallback: the updated WLSAPlus Android app, internet access on both devices, and the same personal Tailscale account on both
+- For automatic fallback: working internet access on both devices
 
-The **Windows app controls the phone**. The upcoming **Android companion receives the connection**; it does not control another phone. This feature is not available in the web or macOS version.
+The **Windows app controls the phone**. The **Android app receives the connection**; it does not control another phone. This feature is not available in the web or macOS version, and iPhones are not supported.
 
-The secure connection is built into WLSAPlus. You do not need a separate Tailscale app or your own server. Tailscale provides the hosted sign-in, coordination, and relay service. A sign-in is required on each device the first time fallback is needed. Use your own account, not one shared by everyone at school.
+The secure connection is built into WLSAPlus and uses the hosted WLSAPlus relay. No separate Cloudflare app or PowerSchool login is needed. You approve your own computer using a matching code during USB setup.
 
 Sound forwarding normally requires Android 11 or newer. Video, touch, and keyboard control may still work on older Android versions without sound.
 
@@ -56,13 +56,15 @@ For example: `how to enable developer options Xiaomi 15`.
 
 Some phones have another setting named **USB debugging (Security settings)** or **Install via USB**. WLSAPlus normally needs only the main USB debugging option. If touch or keyboard control does not work on a Xiaomi or similar phone, enabling the security-related USB debugging option may help.
 
-## Step 3: Put both devices on the same Wi-Fi
+## Step 3: Connect both devices to Wi-Fi
 
-Connect the phone and laptop to the same Wi-Fi network before opening Phone control.
+For the fastest direct connection, connect the phone and laptop to the same Wi-Fi network before opening Phone control.
 
-Using the same internet provider is not enough. For example, a phone using mobile data and a laptop using school Wi-Fi are not on the same local network. The Wi-Fi name shown on both devices should normally be the same.
+For direct Wi-Fi, the Wi-Fi name shown on both devices should normally be the same. A phone using mobile data and a laptop using Wi-Fi cannot connect directly this way, but the secure fallback can work if both can reach the relay over the internet. Relayed video uses internet data.
 
-Guest Wi-Fi and some managed networks prevent devices from talking to each other, even when their Wi-Fi names match. The automatic fallback can connect through an encrypted internet relay when a direct connection is unavailable. Both devices can stay on that Wi-Fi, provided it permits access to Tailscale. A Wi-Fi password does not remove device isolation.
+Guest Wi-Fi and some managed networks prevent devices from talking to each other, even when their Wi-Fi names match. Both devices can stay on that Wi-Fi and use the automatic Cloudflare fallback, provided the network allows access to the relay. You do not need to change the router or its Wi-Fi password.
+
+Direct Wi-Fi usually has less delay. Cloudflare fallback can be slower or disconnect on unstable networks; it cannot guarantee a connection everywhere.
 
 ## Step 4: Make the first USB connection
 
@@ -84,10 +86,10 @@ Do not approve USB debugging on a public or unknown computer. This permission al
 5. Select **Connect by USB**.
 6. Keep the phone unlocked and connected by USB while WLSAPlus reads the phone information and enables wireless mode.
 7. If the USB debugging message appears again, select **Allow**.
-8. If prompted to sign in or approve a computer, follow the secure-connection steps below.
+8. If WLSAPlus asks you to enable the Android connection and approve a code, follow the secure-connection steps below.
 9. Wait for the phone window to open on the laptop.
 
-After the phone window opens and WLSAPlus says the phone is connected, you can unplug the USB cable. The phone window should continue working over Wi-Fi.
+After the phone window opens and WLSAPlus says **Phone is connected**, you can unplug the USB cable. The phone window should continue working wirelessly. If fallback is in use, the **Secure connection** section says **Connected through Cloudflare**.
 
 Android 11 phones should remain unlocked while the phone window is starting so that audio capture can begin correctly.
 
@@ -95,19 +97,17 @@ Android 11 phones should remain unlocked while the phone window is starting so t
 
 This only appears when the direct Wi-Fi connection fails. Keep the USB cable connected throughout these steps.
 
-1. On Windows, select **Sign in** when it appears in Phone control. A browser opens the official Tailscale sign-in page. Create or sign in to your personal account and finish adding the computer.
-2. WLSAPlus opens **Connect to computer** in the Android app. You can also open it yourself from the Android app's login screen or **Tools**; a PowerSchool login is not required.
-3. On the phone, select **Enable connection**. Allow notifications so that the persistent **Stop** control stays visible.
-4. Select **Sign in to Tailscale** on the phone. Use the **same account** as on the laptop. Return to WLSAPlus after finishing in the browser.
-5. When the phone says **Ready to pair**, select **Pair computer**.
-6. Compare the six-digit code on the phone with the code shown in WLSAPlus on the laptop. If they match, select **Approve matching code** and confirm. Never approve a code you did not request or one that does not match.
-7. Wait until the actual phone window opens on Windows. Only then unplug USB.
+1. WLSAPlus opens **Connect to computer** in the Android app. You can also open it yourself from the Android app's login screen or **Tools**; a PowerSchool login is not required.
+2. On the phone, select **Enable connection**. If Android asks about notifications, allowing them makes the connection's **Stop** control easy to find.
+3. When the phone says **Ready to pair**, select **Pair computer**.
+4. Compare the six-digit code on the phone with the code shown in WLSAPlus on the laptop. If they match, select **Approve matching code**, then **Approve** in the confirmation. Never approve a code you did not request or one that does not match.
+5. Wait until the actual phone window opens on Windows. Only then unplug USB.
 
-The pairing window expires after three minutes. If setup times out while you are creating an account, finish signing in and select **Connect by USB** again on Windows. If one side already saved the pair but the other did not, use **Forget** on Windows and **Forget computer** on Android, then repeat USB approval.
+The pairing window expires after three minutes. If setup times out, keep USB connected, select **Connect by USB** again on Windows, and reopen **Pair computer** on the phone if it appears. An interrupted setup can usually resume without forgetting the pair.
 
-Only one computer is approved at a time. The sign-in and approved pair are saved securely on each device. WLSAPlus does not need your Tailscale password. The connection carries phone-control traffic only; it is not a full-device VPN.
+Only one computer is approved at a time, and the approved pairing is saved securely on both devices. Other people on the same Wi-Fi do not share that pairing. Phone-control traffic is encrypted between your devices; using this connection does not turn on the separate WLSAPlus VPN tool.
 
-Some accounts require device approval in the Tailscale admin console. Custom account access rules must permit the two devices to communicate. Hosted service availability, account limits, relay distance, and network restrictions still apply; fallback cannot guarantee a connection on every network.
+**Phone paired** means the approval has been saved. **Connected through Cloudflare** means the secure connection is available. Wait for **Phone is connected** and the visible phone window before treating setup as finished.
 
 ## Using the phone from the laptop
 
@@ -123,10 +123,10 @@ If **Turn off the phone display** was enabled, the real phone screen stays black
 
 As long as the phone has not restarted and remains reachable:
 
-1. Open **Tools > Phone control**.
-2. Select **Open wirelessly**.
-3. For a paired connection, open **Connect to computer** on Android and select **Enable connection** if it is stopped.
-4. Keep the phone awake and wait for the phone window to open.
+1. For a paired connection, open **Connect to computer** on Android and select **Enable connection** if it is stopped.
+2. Open the installed WLSAPlus app on Windows, then **Tools > Phone control**.
+3. Select **Open wirelessly**.
+4. Keep the phone unlocked while connecting and wait for the phone window to open.
 
 Android may disable the debugging connection after the phone restarts or Developer options are reset. Reconnect the cable and select **Connect by USB** again; you normally do not need to forget the saved pair. If the connection fails to reopen, the USB button also appears beside the retry control.
 
@@ -146,13 +146,19 @@ Unlock the phone, select **Allow** on the debugging message, and try again. If n
 
 ### WLSAPlus cannot find a Wi-Fi address
 
-Make sure Wi-Fi is turned on for the phone. With the upcoming version, a missing direct Wi-Fi address starts the secure fallback instead. The fallback still needs internet access and the Android companion.
+Make sure Wi-Fi is turned on for the phone. In version 1.0.7, a missing direct Wi-Fi address starts the secure fallback instead. Keep USB connected during the first setup, install WLSAPlus on Android, and follow the matching-code steps above. Both devices still need internet access for the fallback.
 
 ### The wireless connection fails
 
-The Wi-Fi network may block communication between devices. Leave USB connected and let WLSAPlus try its secure connection automatically. If that also fails, confirm that both devices are signed in to the same Tailscale account and that the Android connection is enabled. After a phone restart, repeat USB setup.
+The Wi-Fi network may block communication between devices. Leave USB connected and let WLSAPlus try its secure connection automatically. If that also fails, check that both devices have working internet access, both apps are version 1.0.7 or newer, and **Connect to computer** is enabled on Android. After a phone restart, repeat USB setup.
 
-If Tailscale itself is blocked or unreachable, neither this fallback nor a matching Wi-Fi name can fix that. Use an allowed network or USB-based mirroring software. WLSAPlus does not change the Wi-Fi administrator's settings.
+If the relay is blocked or unreachable, try another network if one is available. You do not need to create an account or change any server settings.
+
+### The phone window closes with "Device disconnected" or "device offline"
+
+A network interruption can close the phone window even if the secure connection reconnects afterward. Keep **Connect to computer** enabled on the phone and select **Open wirelessly** on Windows to open a new phone window. Seeing **Connected through Cloudflare** by itself does not mean the mirror is still open.
+
+If it keeps failing, unlock the phone, reconnect the USB cable, and select **Connect by USB**. Check for a new USB debugging approval prompt. You normally do not need to forget the saved pairing. For less delay and fewer interruptions, use a Wi-Fi network that allows a direct connection when possible.
 
 ### The connection stops when the phone screen is off
 
@@ -165,6 +171,14 @@ Audio requires Android 11 or newer and may be blocked by individual apps. Unlock
 ### Touch or keyboard input does not work
 
 Confirm that the phone still shows the connected computer as authorized in Developer options. Some phone brands also require their additional USB debugging security option.
+
+## Upgrading from an older version or test build
+
+Install the latest Windows release, then use the **WLSAPlus desktop shortcut**. Normal use does not require an npm command. Close any Windows development or preview instance before opening the installed app's phone connection.
+
+If an older Android installation refuses the 1.0.7 update, read the [1.0.7 release notes](https://github.com/DDguan2010/wlsaplus/releases/tag/v1.0.7) before removing anything. The Android signing key changed for this release, and uninstalling the old app clears its local data. Save any tasks or settings you need first.
+
+**WLSAPlus Phone Preview** is a separate Android app. Its pairing is not automatically imported into the regular Android app. If you already have a working preview connection, keep it until you are ready to set up the regular app. To move to the regular Android app, stop the preview connection, select **Forget** on Windows, and repeat USB pairing with the regular app. Older Tailscale pairings also need a new USB approval for Cloudflare.
 
 ## Turning the feature off
 
