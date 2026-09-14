@@ -103,4 +103,24 @@ async function loadRelease() {
   }
 }
 
-if (typeof document !== 'undefined') void loadRelease();
+async function loadNotice() {
+  try {
+    const response = await fetch(`/notice.json?ts=${Date.now()}`, {
+      cache: 'no-store',
+      headers: { Accept: 'application/json', 'Cache-Control': 'no-cache', Pragma: 'no-cache' },
+    });
+    if (!response.ok) return;
+    const notice = await response.json();
+    if (!notice || typeof notice.title !== 'string' || typeof notice.content !== 'string') return;
+    document.querySelector('#notice-title').textContent = notice.title;
+    document.querySelector('#notice-content').textContent = notice.content;
+    document.querySelector('#site-notice').hidden = false;
+  } catch {
+    // Notices are optional and should never prevent the page from loading.
+  }
+}
+
+if (typeof document !== 'undefined') {
+  void loadRelease();
+  void loadNotice();
+}
