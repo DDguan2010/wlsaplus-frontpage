@@ -113,7 +113,11 @@ async function loadNotice() {
     const notice = await response.json();
     if (!notice || typeof notice.title !== 'string' || typeof notice.content !== 'string') return;
     document.querySelector('#notice-title').textContent = notice.title;
-    document.querySelector('#notice-content').textContent = notice.content;
+    const content = String(notice.content);
+    const supportUrl = 'https://ifdian.net/a/02studio';
+    document.querySelector('#notice-content').textContent = content.replace(` ${supportUrl}`, '');
+    const support = document.querySelector('#notice-support');
+    if (content.includes(supportUrl)) support.hidden = false;
     document.querySelector('#site-notice').hidden = false;
   } catch {
     // Notices are optional and should never prevent the page from loading.
