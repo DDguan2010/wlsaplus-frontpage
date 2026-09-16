@@ -124,7 +124,4 @@ async function loadNotice() {
   }
 }
 
-if (typeof document !== 'undefined') {
-  void loadRelease();
-  void loadNotice();
-}
+if (typeof document !== 'undefined') void loadRelease();
