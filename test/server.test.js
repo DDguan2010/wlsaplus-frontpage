@@ -25,8 +25,8 @@ test('serves the front page and static assets', async () => {
     assert.match(pageBody, /<h1 id="hero-title">WLSAPlus<\/h1>/);
     assert.match(pageBody, /href="https:\/\/wlsap\.02studio\.xyz\/"/);
     assert.match(pageBody, /<a class="download-link" href="https:\/\/wlsap\.02studio\.xyz\/">/);
-    assert.match(pageBody, /class="download-link unavailable" aria-disabled="true"/);
-    assert.match(pageBody, /macOS unavailable/);
+    assert.match(pageBody, /<a class="download-link" href="https:\/\/gh-proxy\.com\/https:\/\/github\.com\/yezicheng2011\/wlsaplus-enablemacos\/releases\/latest\/download\/wlsaplusformac\.zip"><strong>Download for macOS<\/strong>/);
+    assert.doesNotMatch(pageBody, /macOS unavailable|Not usable for now|aria-disabled="true"/);
     assert.match(pageBody, /href="\/blog\/"/);
     assert.doesNotMatch(pageBody, /data-platform="macos"/);
 

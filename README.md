@@ -1,6 +1,6 @@
 # WLSAPlus front page 
 
-A small Node.js site for downloading and learning about WLSAPlus. The server reads the newest public GitHub release and connects each platform button to its current asset.
+A small Node.js site for downloading and learning about WLSAPlus. Windows and Android downloads use the newest public release from `DDguan2010/wlsaplus`. The macOS button downloads `wlsaplusformac.zip` from the latest release of `yezicheng2011/wlsaplus-enablemacos` through the same `gh-proxy.com` mirror. Keep that asset filename when publishing new macOS releases; no front page change is needed.
 
 ## Blog
 
